@@ -23,4 +23,19 @@ app.get("/api/notes", (req, res) => {
         if (err) throw err;
         return res.json(JSON.parse(data));
     });
-})
+});
+
+app.post("/api/notes", (req, res) => {
+    fs.readFile("./db/db.json", (err, data) => {
+            if (err) throw err;
+            req.body.id = Date.now();
+            const noteList = JSON.parse(data);
+            noteList.push(req.body);
+            console.log(noteList);
+                fs.writeFile("./db/db.json", JSON.stringify(noteList), (err) => {
+                    if (err) throw err;
+                    console.log("File saved!");
+                });
+        res.json(req.body);
+    });
+});
