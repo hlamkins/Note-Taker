@@ -6,7 +6,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -38,4 +38,31 @@ app.post("/api/notes", (req, res) => {
                 });
         res.json(req.body);
     });
+});
+
+
+app.delete("/api/notes/:id", (req, res) => {
+    fs.readFile("./db/db.json", (err, data) => {
+        if (err) throw err;
+        const noteList = JSON.parse(data);
+        const noteId = req.params.id;
+        const newList = noteList.filter(note => {
+            return note.id != noteId;
+        });
+        console.log(newList);
+            fs.writeFile("./db/db.json", JSON.stringify(newList), (err) => {
+            if (err) throw err;
+            console.log("The file has been deleted!");
+            });
+        res.end();
+      });
+});
+
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+});
+
+app.listen(PORT, () => {
+    console.log('App is running on http://localhost:${PORT}');
 });
